@@ -8,6 +8,7 @@ const POWER_UP_KEY = 101;  //E
 const POWER_DOWN_KEY = 113;  //Q
 
 function randomWind() {
+  // -0.5 | 0.5
   min = Math.ceil(0);
   max = Math.floor(10);
   wind = ((Math.floor(Math.random() * (max - min + 1)) + min)-5)/10;
@@ -125,13 +126,32 @@ class Cannon  { //NOTE: angle is in radians
 		}
 }
 
+function Round(n, k)
+{
+  if(k>0) {
+    var factor = Math.pow(10, k);
+    return Math.round(n*factor)/factor;
+  }
+  else {
+    return console.error("Nie dzielimy przez 0!");
+  }
+}
+
+function interface(c, p, a) {
+ c.font = "12pt Arial Black";
+ c.textAlign = 'left';
+ c.fillText(`Wind: ${wind*10}`,10,15);
+ c.fillText(`Angle: ${Math.round(180 * (a+0.01) / Math.PI)-1}`,10,30);
+ c.fillText(`Power: ${Round(p,1)}`,10,45);
+}
+
 window.onload = function() {
 	var canvas = document.getElementById('screen');
   var ctx = canvas.getContext('2d');
   this.randomWind();
   var cannon = new Cannon(ctx,70,Math.PI/4);
   var target = new Target(ctx);
-	var counter = 0;
+  var counter = 0;
 	window.onkeypress = function(e) {
 		if (e.keyCode == UP_KEY) {
 			cannon.increaseAngle();
@@ -153,6 +173,7 @@ window.onload = function() {
 		ctx.clearRect(0,0,canvas.width,canvas.height);
     cannon.draw();
     target.draw();
+    interface(ctx,cannon.power,cannon.angle);
     cannon.cbCollection.forEach(function(element) {
       if(element.y >= 398) {
         if(element.x >= target.x - 20 && element.x <= target.x + 20) {
